@@ -8,6 +8,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
+#include "main.h"
 
 using namespace vex;
 
@@ -69,6 +70,9 @@ void usercontrol(void) {
     // Insert user code here. This is where you use the joystick values to
     // update your motors, etc.
     // ........................................................................
+
+    Brain.Screen.clearScreen();
+    battery();
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
