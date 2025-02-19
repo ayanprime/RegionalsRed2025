@@ -61,6 +61,8 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
+  leftWallStake.setPosition(0, degrees);
+  rightWallStake.setPosition(0, degrees);
   while (1) {
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
@@ -72,7 +74,38 @@ void usercontrol(void) {
     // ........................................................................
 
     Brain.Screen.clearScreen();
+    drawLogo();
     battery();
+    leftWallStake.setStopping(hold);
+    rightWallStake.setStopping(hold);
+
+    if(controller1.ButtonR1.pressing()) {
+      conveyor.spin(forward, 70, percent);
+      intake.spin(forward, 100, percent);
+    } else if(controller1.ButtonR2.pressing()) {
+      conveyor.spin(reverse, 70, percent);
+      intake.spin(reverse, 100, percent);
+    } else {
+      conveyor.stop();
+      intake.stop();
+    }
+
+    if(controller1.ButtonL1.pressing() && wallStakePosition < 2) {
+      wallStakePosition++;
+    } else if(controller1.ButtonL2.pressing() && wallStakePosition > 0) {
+      wallStakePosition--;
+    }
+
+    if(wallStakePosition == 0) {
+      leftWallStake.spinToPosition(0, degrees, false);
+      rightWallStake.spinToPosition(0, degrees, false);
+    } else if(wallStakePosition == 1) {
+      leftWallStake.spinToPosition(45, degrees, false);
+      rightWallStake.spinToPosition(45, degrees, false);
+    } else if(wallStakePosition == 2) {
+      leftWallStake.spinToPosition(90, degrees, false);
+      rightWallStake.spinToPosition(90, degrees, false);
+    }
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
