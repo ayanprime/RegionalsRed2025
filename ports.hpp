@@ -3,12 +3,16 @@
 
 // ===================== Devices ===================== //
 
-//main devices
+// main devices
 extern brain Brain;
 extern controller controller1;
 
-//motors
+//conveyor
+extern motor conveyor;
 
-//pods
+//intake
+extern motor intake;
 
-//extra
+//wall-stake scorer
+extern motor leftWallStake;
+extern motor rightWallStake;
