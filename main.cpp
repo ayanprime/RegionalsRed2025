@@ -31,6 +31,15 @@ void pre_auton(void) {
 
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
+  while (true) {
+    if (selector.angle() < 167) {
+      side = 'r';
+    } else if (selector.angle() > 167) {
+      side = 'l';
+    } else {
+      Brain.Screen.clearScreen();
+    }
+  }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -47,6 +56,7 @@ void autonomous(void) {
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
+  Right();
 }
 
 /*---------------------------------------------------------------------------*/
@@ -61,6 +71,8 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
+  Brain.Screen.clearScreen();
+  drawLogo();
   leftWallStake.setPosition(0, degrees);
   rightWallStake.setPosition(0, degrees);
   while (1) {
@@ -73,41 +85,72 @@ void usercontrol(void) {
     // update your motors, etc.
     // ........................................................................
 
-    Brain.Screen.clearScreen();
-    drawLogo();
     battery();
+    sorter.setLightPower(100, percent);
+    LeftDrive.setVelocity(controller1.Axis3.position()+controller1.Axis1.position(), percent);
+    RightDrive.setVelocity(controller1.Axis3.position()-controller1.Axis1.position(), percent);
+    leftWallStake.setVelocity(50, percent);
+    rightWallStake.setVelocity(50, percent);
     leftWallStake.setStopping(hold);
     rightWallStake.setStopping(hold);
+    LeftDrive.spin(forward);
+    RightDrive.spin(forward);
+    conveyor.setVelocity(40, percent);
+
+
+    // conveyor and intake
 
     if(controller1.ButtonR1.pressing()) {
-      conveyor.spin(forward, 70, percent);
+      conveyor.spin(forward);
       intake.spin(forward, 100, percent);
     } else if(controller1.ButtonR2.pressing()) {
-      conveyor.spin(reverse, 70, percent);
+      conveyor.spin(reverse);
       intake.spin(reverse, 100, percent);
     } else {
       conveyor.stop();
       intake.stop();
     }
+    
+    if (sorter.hue() <= 240 && sorter.hue() >= 212) {
+      conveyor.setVelocity(-100, percent);
+    } 
 
-    if(controller1.ButtonL1.pressing() && wallStakePosition < 2) {
-      wallStakePosition++;
-    } else if(controller1.ButtonL2.pressing() && wallStakePosition > 0) {
-      wallStakePosition--;
+    // wall-stake control
+
+    if(controller1.ButtonB.pressing()) {
+      wallStakePosition = 0;
+    } else if(controller1.ButtonA.pressing()) {
+      wallStakePosition = 1;
+    } else if(controller1.ButtonX.pressing()) {
+      wallStakePosition = 2;
     }
 
+    // wall-stake position
+
     if(wallStakePosition == 0) {
+      leftWallStake.setVelocity(35, percent);
+      rightWallStake.setVelocity(35, percent);
       leftWallStake.spinToPosition(0, degrees, false);
       rightWallStake.spinToPosition(0, degrees, false);
     } else if(wallStakePosition == 1) {
-      leftWallStake.spinToPosition(45, degrees, false);
-      rightWallStake.spinToPosition(45, degrees, false);
+      leftWallStake.setVelocity(50, percent);
+      rightWallStake.setVelocity(50, percent);
+      leftWallStake.spinToPosition(24, degrees, false);
+      rightWallStake.spinToPosition(24, degrees, false);
     } else if(wallStakePosition == 2) {
-      leftWallStake.spinToPosition(90, degrees, false);
-      rightWallStake.spinToPosition(90, degrees, false);
+      leftWallStake.setVelocity(100, percent);
+      rightWallStake.setVelocity(100, percent);
+      leftWallStake.spinToPosition(130, degrees, false);
+      rightWallStake.spinToPosition(130, degrees, false);
     }
 
-    wait(20, msec); // Sleep the task for a short amount of time to
+    if(controller1.ButtonDown.pressing()) {
+      clamp.set(true);
+    } else if(controller1.ButtonUp.pressing()) {
+      clamp.set(false);
+    }
+
+    wait(1, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }
 }
