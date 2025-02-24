@@ -1,5 +1,10 @@
 #include "main.h"
 
+void timer_event() {
+    conveyor.stop();
+    intake.stop();
+  }
+
 void battery (void) {
 
     Brain.Screen.setFillColor(white);
