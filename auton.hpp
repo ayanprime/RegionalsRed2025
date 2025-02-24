@@ -1,5 +1,8 @@
 #pragma once
 #include "main.h"
 
-void forwardP(float Dis);
-void turnP (float angle);
+// ===================== P-Control ===================== //
+void goP (float DisL, float DisR);
+
+// ===================== Auton Routines ===================== //
+void Right();
